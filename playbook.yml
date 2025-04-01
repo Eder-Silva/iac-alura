@@ -1,0 +1,52 @@
+# Define os hosts onde as tarefas serão executadas
+# "terraform-ansible" é o grupo definido no arquivo hosts.yml
+- hosts: terraform-ansible
+  
+  # Lista de tarefas que serão executadas nos servidores
+  tasks:
+  - name: Instalando o Python3 e virtualenv  # Nome da primeira tarefa
+    apt:  # Usa o gerenciador de pacotes do Ubuntu/Debian (APT)
+      pkg:  # Lista de pacotes a serem instalados
+        - python3  # Instalando o interpretador Python3
+        - virtualenv  # Instalando a ferramenta para criação de ambientes virtuais
+      update_cache: yes  # Atualiza a lista de pacotes antes de instalar
+    become: yes  # Executa a tarefa com privilégios de superusuário (equivalente a "sudo")
+
+  - name: Instalando dependências com pip (Django e Django Rest)  # Nome da segunda tarefa
+    pip:  # Usa o gerenciador de pacotes do Python (pip) para instalar pacotes
+      virtualenv: /home/ubuntu/tcc/venv  # Define que os pacotes serão instalados dentro do ambiente virtual
+      name:  # Lista de pacotes Python a serem instalados
+        - django  # Framework web Django
+        - djangorestframework  # Extensão para APIs REST no Django
+
+  - name: Iniciando o Projeto  # Nome da tarefa para facilitar a leitura do playbook
+    shell: '. /home/ubuntu/tcc/venv/bin/activate; django-admin startproject setup /home/ubuntu/tcc/'  
+    # Comando shell para iniciar um novo projeto Django dentro do ambiente virtual
+    # 1️⃣ `. /home/ubuntu/tcc/venv/bin/activate` → Ativa o ambiente virtual do Python
+    # 2️⃣ `django-admin startproject setup /home/ubuntu/tcc/` → Cria um projeto Django chamado "setup" dentro da pasta "/home/ubuntu/tcc/"
+    #    - "setup" será o diretório principal do projeto Django
+    #    - "/home/ubuntu/tcc/" é onde os arquivos do projeto serão armazenados
+
+
+  - name: Alterando o hosts do settings
+    lineinfile:
+      path: /home/ubuntu/tcc/setup/settings.py
+      regexp: 'ALLOWED_HOSTS'
+      line: 'ALLOWED_HOSTS = ["*"]'
+      backrefs: yes
+
+
+
+
+
+
+    
+  #   # Primeira tarefa: Criar um arquivo index.html na máquina remota
+  # - name: Criando o arquivo
+  #   copy:
+  #     dest: /home/ubuntu/index.html  # Caminho onde o arquivo será criado
+  #     content: <h1>Esse bilhete é verdade</h1>  # Conteúdo do arquivo HTML
+  
+  #   # Segunda tarefa: Iniciar um servidor web simples na porta 8080
+  # - name: Criando o servidor
+  #   shell: "nohup busybox httpd -f -p 8080 &"  # Comando para rodar o servidor em background

@@ -26,9 +26,14 @@ resource "aws_instance" "app_server" {
   # Define o par de chaves (Key Pair) que será usado para acessar a instância via SSH
   # "iac-alura" deve ser o nome de um Key Pair existente na sua conta AWS
   key_name = "iac-alura"
-
+  #user_data = <<-EOF
+  #               #!/bin/bash
+  #               cd /home/ubuntu
+  #               echo "<h1> Feito com Terraform </h1>" > index.html
+  #               nohup busybox httpd -f -p 8080 &
+  #                EOF 
   tags = {
-    Name = "Primeira Instancia"           # Nome para identificar a instância
+    Name = "Terraform Ansible Python"           # Nome para identificar a instância
   }
 }
 
